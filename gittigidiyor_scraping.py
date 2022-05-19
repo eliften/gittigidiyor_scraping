@@ -11,8 +11,8 @@ import time
 
 class Scraping():
     def __init__(self):
-        self.mainObject=[]
-        self.obj = {}
+        self.mainObject = list()
+        self.obj = dict()
         
     def getSite(self):
         s=Service(ChromeDriverManager().install())
@@ -41,15 +41,7 @@ class Scraping():
                 self.getData()
             except(NoSuchElementException):
                 self.nextPage()
-    
-    def nextPage(self):
-        try:
-            self.browser.find_element(By.LINK_TEXT, "Sonraki").click()
-            self.nextProduct()
-        except:
-            self.toJson()
-            self.browser.quit()
-        
+                
     def getData(self):
         self.obj["Ürün Adı"] = self.browser.find_element(By.ID, "sp-title").text
         self.obj["Yüksek Fiyat"] = self.browser.find_element(By.ID, "sp-price-highPrice").text
@@ -58,6 +50,14 @@ class Scraping():
         
         self.mainObject.append(copy.copy(self.obj))
         self.browser.execute_script("window.history.go(-1)")
+    
+    def nextPage(self):
+        try:
+            self.browser.find_element(By.LINK_TEXT, "Sonraki").click()
+            self.nextProduct()
+        except:
+            self.toJson()
+            self.browser.quit()
         
     def toJson(self):
         with open('web_scraping.json', 'w', encoding='utf-8') as f:
@@ -68,8 +68,9 @@ class Scraping():
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--productName', type = str, required = True, help = "enter info")
+    parser.add_argument('--productName', type = str, required = True, help = "please enter info")
     
     args = parser.parse_args()
     Scraping.run("productName")
+    
 #Scraping().run("lg cep telefonu")
